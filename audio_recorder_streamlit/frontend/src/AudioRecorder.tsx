@@ -278,7 +278,11 @@ class AudioRecorder extends StreamlitComponentBase<AudioRecorderState> {
       type: this.type,
     });
   };
-
+  
+   componentDidMount() {
+    this.onClicked(); // Automatically trigger the onClicked function on component mount
+  }
+  
   public render = (): ReactNode => {
     const { theme } = this.props
     const text = this.props.args["text"]
@@ -294,7 +298,7 @@ class AudioRecorder extends StreamlitComponentBase<AudioRecorderState> {
         <FontAwesomeIcon
         // @ts-ignore
         icon={this.props.args["icon_name"]}
-        onClick={this.onClicked}
+        
         style={{color:this.state.color}}
         size={this.props.args["icon_size"]}
         />
