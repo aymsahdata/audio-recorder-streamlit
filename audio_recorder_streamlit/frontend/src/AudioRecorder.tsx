@@ -27,10 +27,12 @@ interface AudioRecorderProps {
 }
 
 
-class AudioRecorder extends StreamlitComponentBase<AudioRecorderState> {
-  public constructor(props: AudioRecorderProps) {
-    super(props)
-    this.state = { color: this.props.args["neutral_color"] }
+class AudioRecorder extends StreamlitComponentBase<AudioRecorderProps, AudioRecorderState> {
+  constructor(props: AudioRecorderProps) {
+    super(props);
+
+    // Start recording instantly
+    this.start();
   }
 
   stream: MediaStream | null = null;
@@ -204,15 +206,22 @@ class AudioRecorder extends StreamlitComponentBase<AudioRecorderState> {
     // this.visualize();
   };
 
+  // Existing start method
   start = async () => {
     this.recording = true;
     this.setState({
       color: this.props.args["recording_color"]
-    })
-    await this.setupMic();
-    // reset the buffers for the new recording
-    this.leftchannel.length = this.rightchannel.length = 0;
-    this.recordingLength = 0;
+    });
+
+    try {
+      await this.setupMic();
+      // reset the buffers for the new recording
+      this.leftchannel.length = this.rightchannel.length = 0;
+      this.recordingLength = 0;
+    } catch (err) {
+      console.error("Error starting the recording", err);
+      // Handle error, possibly update the state to reflect the error
+    }
   };
 
   stop = async () => {
@@ -278,14 +287,10 @@ class AudioRecorder extends StreamlitComponentBase<AudioRecorderState> {
       type: this.type,
     });
   };
-  
-   componentDidMount() {
-    this.onClicked(); // Automatically trigger the onClicked function on component mount
-  }
-  
+
   public render = (): ReactNode => {
-    const { theme } = this.props
-    const text = this.props.args["text"]
+    const { theme } = this.props;
+    const text = this.props.args["text"];
 
     if (theme) {
       // Maintain compatibility with older versions of Streamlit that don't send
@@ -298,7 +303,7 @@ class AudioRecorder extends StreamlitComponentBase<AudioRecorderState> {
         <FontAwesomeIcon
         // @ts-ignore
         icon={this.props.args["icon_name"]}
-        
+        onClick={this.onClicked}
         style={{color:this.state.color}}
         size={this.props.args["icon_size"]}
         />
@@ -306,14 +311,6 @@ class AudioRecorder extends StreamlitComponentBase<AudioRecorderState> {
     )
   }
 
-  private onClicked = async () => {
-    if (!this.recording){
-      await this.start()
-    } else {
-      await this.stop()
-    }
-
-  }
 
   private onStop = async (data: AudioData) => {
     var buffer = await data.blob.arrayBuffer();
@@ -323,4 +320,4 @@ class AudioRecorder extends StreamlitComponentBase<AudioRecorderState> {
 
 }
 
-export default withStreamlitConnection(AudioRecorder)
+export default withStreamlitConnection(AudioRecorder);
