@@ -13,7 +13,7 @@ setuptools.setup(
     description="",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/Joooohan/audio-recorder-streamlit",
+    url="https://github.com/aymsahdata/audio-recorder-streamlit",
     packages=setuptools.find_packages(),
     include_package_data=True,
     classifiers=[],
